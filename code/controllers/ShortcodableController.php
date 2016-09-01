@@ -206,6 +206,7 @@ class ShortcodableController extends LeftAndMain
             return;
         }
 
+
         $classname = $request->param('ID');
         $id = $request->param('OtherID');
 
@@ -219,18 +220,19 @@ class ShortcodableController extends LeftAndMain
             $object = singleton($classname);
         }
 
-        if ($object->hasMethod('getShortcodePlaceHolder')) {
-            $attributes = null;
-            if ($shortcode = $request->requestVar('Shortcode')) {
-                $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode); //remove BOM inside string on cursor position...
-                $shortcodeData = singleton('ShortcodableParser')->the_shortcodes(array(), $shortcode);
-                if (isset($shortcodeData[0])) {
-                    $attributes = $shortcodeData[0]['atts'];
-                }
-            }
-
-            $link = $object->getShortcodePlaceholder($attributes);
-            return $this->redirect($link);
-        }
+        return $object->Content;
+        // Below Not needed.
+        // if ($object->hasMethod('getShortcodePlaceHolder')) {
+        //     $attributes = null;
+        //     if ($shortcode = $request->requestVar('Shortcode')) {
+        //         $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode); //remove BOM inside string on cursor position...
+        //         $shortcodeData = singleton('ShortcodableParser')->the_shortcodes(array(), $shortcode);
+        //         if (isset($shortcodeData[0])) {
+        //             $attributes = $shortcodeData[0]['atts'];
+        //         }
+        //     }
+        //     $link = $object->getShortcodePlaceholder($attributes);
+        //     return $this->redirect($link);
+        // }
     }
 }

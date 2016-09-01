@@ -1,3 +1,4 @@
+
 (function($) {
     $.entwine('ss', function($) {
 
@@ -74,7 +75,7 @@
                         var shortcodable = tinyMCE.activeEditor.plugins.shortcodable;
                         ed.replaceContent(shortcode);
                         var newContent = shortcodable.replaceShortcodesWithPlaceholders(ed.getContent(), ed.getInstance());
-                        console.log(newContent);
+                        //console.log(newContent);
                         ed.setContent(newContent);
                     });
                 }

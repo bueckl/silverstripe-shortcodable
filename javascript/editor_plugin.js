@@ -1,5 +1,8 @@
+var GlobalRes;
+
 (function () {
     if (typeof tinymce !== 'undefined') {
+
 
         tinymce.create('tinymce.plugins.shortcodable', {
             getInfo: function () {
@@ -33,28 +36,67 @@
 
                 ed.onDblClick.add(function (ed, e) {
                     var dom = ed.dom, node = e.target;
-                    if (node.nodeName === 'IMG' && dom.hasClass(node, 'shortcode-placeholder') && e.button !== 2) {
+                    if (node.nodeName === 'DIV' && dom.hasClass(node, 'shortcode-placeholder') && e.button !== 2) {
                         ed.execCommand('shortcodable');
                     }
                 });
             },
 
+
+
             // replace shortcode strings with placeholder images
             replaceShortcodesWithPlaceholders: function (content, editor) {
                 var plugin = tinyMCE.activeEditor.plugins.shortcodable;
                 var placeholderClasses = jQuery('#' + editor.id).entwine('ss').getPlaceholderClasses();
-
+                console.log( placeholderClasses );
                 if (placeholderClasses) {
                     return content.replace(/\[([a-z]+)\s*([^\]]*)\]/gi, function (found, name, params) {
                         var id = plugin.getAttribute(params, 'id');
+                        
                         if (placeholderClasses.indexOf(name) != -1) {
                             var src = encodeURI('ShortcodableController/shortcodePlaceHolder/' + name + '/' + id + '?Shortcode=[' + name + ' ' + params + ']');
-                            var img = jQuery('<img/>')
+                            var img = jQuery('<div/>')
                                 .attr('class', 'shortcode-placeholder mceItem')
                                 .attr('title', name + ' ' + params)
                                 .attr('src', src);
+                            
+
+                            tinymce.util.XHR.send({
+                                    url: src,
+                                    success: function(res) {
+                                        GlobalRes = res;
+                                    }
+                                });
+
+                            img.append(GlobalRes);
                             return img.prop('outerHTML');
+
                         }
+
+                        // if (placeholderClasses.indexOf(name) != -1) {
+                        //     var src = encodeURI('ShortcodableController/shortcodePlaceHolder/' + name + '/' + id + '?Shortcode=[' + name + ' ' + params + ']');
+
+                        //     var img = document.createElement('div');
+                        //     img.setAttribute('class', 'shortcode-placeholder mceItem');
+                        //     img.setAttribute('title', name + ' ' + params);
+                        //     img.setAttribute('src', src);
+                        //         //var img = jQuery('<div/>')
+                        //         //.attr('class', 'shortcode-placeholder mceItem')
+                        //         //.attr('title', name + ' ' + params)
+                        //         //.attr('src', src);
+
+                        //         tinymce.util.XHR.send({
+                        //             url: src,
+                        //             success: function(res) {
+                        //                 img.innerHTML = res;
+                        //             }
+                        //         });
+                        //     console.log("OUTER: "+img.outerHTML);
+                        //     return img.outerHTML;
+
+                        // }
+
+
 
                         return found;
                     });
@@ -62,6 +104,8 @@
                     return content;
                 }
             },
+
+
 
             // replace placeholder tags with shortcodes
             replacePlaceholdersWithShortcodes: function (co) {
